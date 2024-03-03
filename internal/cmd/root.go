@@ -7,12 +7,10 @@ import (
 	"runtime"
 	"runtime/pprof"
 
-	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
 )
 
 func Execute(ctx context.Context) int {
-	_ = godotenv.Load()
 
 	profile := false
 
