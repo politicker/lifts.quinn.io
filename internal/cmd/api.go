@@ -5,8 +5,8 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/hbbb/go-backend-template/internal/api"
-	"github.com/hbbb/go-backend-template/internal/cmdutil"
+	"github.com/politicker/lifts.quinn.io/internal/api"
+	"github.com/politicker/lifts.quinn.io/internal/cmdutil"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
 )

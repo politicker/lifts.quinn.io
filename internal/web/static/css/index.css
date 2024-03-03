@@ -1,0 +1,62 @@
+@font-face {
+	font-family: 'SF Compact Rounded';
+	src: url('static/fonts/SF-Compact-Rounded-Regular.otf') format('otf');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'SF Compact Rounded';
+	src: url('static/fonts/SF-Compact-Rounded-Bold.otf') format('otf');
+	font-weight: bold;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'SF Compact Rounded';
+	src: url('static/fonts/SF-Compact-Rounded-Black.otf') format('otf');
+	font-weight: bolder;
+	font-style: normal;
+}
+
+html,
+body,
+* {
+	font-family: 'SF Compact Rounded', sans-serif;
+	background-color: #E4DFD5;
+	margin: 0;
+	padding: 0;
+}
+
+h3,
+p {
+	margin: 0;
+}
+
+h3 {
+	font-family: 'SF Compact Rounded';
+	font-weight: bold;
+	font-size: 24px;
+	color: #DD534B;
+}
+
+p {
+	font-family: 'SF Compact Rounded';
+	font-weight: bolder;
+	font-size: 72px;
+}
+
+.graph {
+	display: flex;
+	gap: 5px;
+	align-items: flex-end;
+}
+
+.bar {
+	display: inline-block;
+	border-radius: 5px;
+	width: 20px;
+	height: 75px;
+	margin-right: 2px;
+	background-color: #D8BF8A;
+}

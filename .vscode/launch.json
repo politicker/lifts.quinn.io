@@ -5,11 +5,15 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Launch Package",
+			"name": "Web Server",
+			"cwd": "${workspaceFolder}",
 			"type": "go",
 			"request": "launch",
-			"mode": "auto",
-			"program": "${fileDirname}"
-		}
+			"program": "${workspaceFolder}/cmd/main.go",
+			"args": [
+				"web"
+			],
+			"envFile": "${workspaceFolder}/.env"
+		},
 	]
 }

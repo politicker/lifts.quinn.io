@@ -1,6 +1,6 @@
-module github.com/hbbb/go-backend-template
+module github.com/politicker/lifts.quinn.io
 
-go 1.21.0
+go 1.22.0
 
 require (
 	github.com/DataDog/datadog-go v4.8.3+incompatible
@@ -8,6 +8,7 @@ require (
 	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/gorilla/mux v1.8.1
 	github.com/joho/godotenv v1.5.1
+	github.com/lib/pq v1.10.9
 	github.com/redis/go-redis/v9 v9.3.1
 	github.com/spf13/cobra v1.8.0
 	go.uber.org/zap v1.26.0

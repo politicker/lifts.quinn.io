@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>lifts.quinn.io</title>
+    <link rel="stylesheet" href="/static/css/index.css" />
+    <style>
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .frame {
+        display: grid;
+        gap: 80px;
+        grid-template-columns: 1fr 1fr;
+      }
+    </style>
+
+    <script>
+      window.DATA = JSON.parse("{{.LiftData}}");
+    </script>
+
+    <script type="module">
+      import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+
+      const holder = d3.select("body").append("div").attr("class", "frame");
+
+      const height = d3
+        .scaleLinear()
+        .domain([0, d3.max(window.DATA)])
+        .range([0, 100]);
+
+      holder
+        .selectAll(".lift")
+        .data(window.DATA)
+        .join("div")
+        .attr("class", "lift")
+        .each(function (d) {
+          const height = d3
+            .scaleLinear()
+            .domain(d3.extent(d.History))
+            .range([20, 100]);
+
+          const n = d3.select(this);
+
+          n.append("h3").text(d.Name);
+          n.append("p").text(d.BestSet);
+
+          n.append("div")
+            .attr("class", "graph")
+            .selectAll(".bar")
+            .data(d.History)
+            .join("div")
+            .attr("class", "bar")
+            .style("height", (d) => `${height(d)}px`);
+        });
+    </script>
+  </head>
+  <body></body>
+</html>

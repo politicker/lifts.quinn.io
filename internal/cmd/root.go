@@ -17,8 +17,8 @@ func Execute(ctx context.Context) int {
 	profile := false
 
 	rootCmd := &cobra.Command{
-		Use:   "go-backend-template",
-		Short: "Put a description of the service here",
+		Use:   "lifts.quinn.io",
+		Short: "A web service for keeping up with Quinn's lifts",
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			if !profile {
 				return nil
@@ -53,9 +53,7 @@ func Execute(ctx context.Context) int {
 
 	rootCmd.PersistentFlags().BoolVarP(&profile, "profile", "p", false, "record CPU pprof")
 
-	rootCmd.AddCommand(APICmd(ctx))
-	rootCmd.AddCommand(SchedulerCmd(ctx))
-	rootCmd.AddCommand(WorkerCmd(ctx))
+	rootCmd.AddCommand(WebCmd(ctx))
 
 	// I'm not sure what this is for.
 	// go func() {
