@@ -54,6 +54,7 @@ func Execute(ctx context.Context) int {
 	rootCmd.PersistentFlags().BoolVarP(&profile, "profile", "p", false, "record CPU pprof")
 
 	rootCmd.AddCommand(WebCmd(ctx))
+	rootCmd.AddCommand(ExtractCmd(ctx))
 
 	// I'm not sure what this is for.
 	// go func() {

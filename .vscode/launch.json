@@ -15,5 +15,18 @@
 			],
 			"envFile": "${workspaceFolder}/.env"
 		},
+		{
+			"name": "Import lifts",
+			"cwd": "${workspaceFolder}",
+			"type": "go",
+			"request": "launch",
+			"program": "${workspaceFolder}/cmd/main.go",
+			"args": [
+				"extract",
+				"--file",
+				"lifts.csv"
+			],
+			"envFile": "${workspaceFolder}/.env"
+		},
 	]
 }

@@ -24,7 +24,7 @@ func WebCmd(ctx context.Context) *cobra.Command {
 				port, _ = strconv.Atoi(os.Getenv("PORT"))
 			}
 
-			logger := cmdutil.NewLogger("api")
+			logger := cmdutil.NewLogger("web")
 			defer func() { _ = logger.Sync() }()
 
 			db, err := cmdutil.NewDBConnection(ctx)

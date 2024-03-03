@@ -13,10 +13,14 @@ type LiftSetLog struct {
 	WorkoutName     string
 	WorkoutDuration string
 	ExerciseName    string
+	SetOrder        int32
 	Weight          float64
 	Reps            float64
 	Distance        float64
 	Seconds         float64
+	Notes           sql.NullString
+	WorkoutNotes    sql.NullString
+	Rpe             sql.NullString
 	LoggedAt        sql.NullTime
 	ImportedAt      time.Time
 }

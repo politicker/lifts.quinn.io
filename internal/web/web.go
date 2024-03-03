@@ -119,19 +119,19 @@ func (s *web) getLiftData(ctx context.Context) ([]LiftData, error) {
 
 	return []LiftData{{
 		Name:    "OHP",
-		BestSet: bestOHP.(string),
+		BestSet: bestOHP.String,
 		History: ohpHistory,
 	}, {
 		Name:    "Squat",
-		BestSet: bestSquat.(string),
+		BestSet: bestSquat.String,
 		History: squatHistory,
 	}, {
 		Name:    "Bench",
-		BestSet: bestBench.(string),
+		BestSet: bestBench.String,
 		History: benchHistory,
 	}, {
 		Name:    "Deadlift",
-		BestSet: bestDeadlift.(string),
+		BestSet: bestDeadlift.String,
 		History: deadliftHistory,
 	}}, nil
 }

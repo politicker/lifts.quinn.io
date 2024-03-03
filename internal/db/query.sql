@@ -15,6 +15,6 @@ ORDER BY logged_at DESC,
 LIMIT 1;
 
 -- name: CreateLiftSetLog :exec
-INSERT INTO lift_set_log (name, workout_name, exercise_name, workout_duration, weight, reps, seconds, distance,
-                          logged_at)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);
+INSERT INTO lift_set_log (workout_name, workout_duration, exercise_name, set_order, weight, reps, distance, seconds,
+                          notes, workout_notes, rpe, logged_at)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);

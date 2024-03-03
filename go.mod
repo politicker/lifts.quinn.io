@@ -5,6 +5,7 @@ go 1.22.0
 require (
 	github.com/DataDog/datadog-go v4.8.3+incompatible
 	github.com/go-redis/redis/v8 v8.11.5
+	github.com/gocarina/gocsv v0.0.0-20231116093920-b87c2d0e983a
 	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/gorilla/mux v1.8.1
 	github.com/joho/godotenv v1.5.1

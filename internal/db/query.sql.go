@@ -7,7 +7,47 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
+
+const createLiftSetLog = `-- name: CreateLiftSetLog :exec
+INSERT INTO lift_set_log (workout_name, workout_duration, exercise_name, set_order, weight, reps, distance, seconds,
+                          notes, workout_notes, rpe, logged_at)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+`
+
+type CreateLiftSetLogParams struct {
+	WorkoutName     string
+	WorkoutDuration string
+	ExerciseName    string
+	SetOrder        int32
+	Weight          float64
+	Reps            float64
+	Distance        float64
+	Seconds         float64
+	Notes           sql.NullString
+	WorkoutNotes    sql.NullString
+	Rpe             sql.NullString
+	LoggedAt        sql.NullTime
+}
+
+func (q *Queries) CreateLiftSetLog(ctx context.Context, arg CreateLiftSetLogParams) error {
+	_, err := q.db.ExecContext(ctx, createLiftSetLog,
+		arg.WorkoutName,
+		arg.WorkoutDuration,
+		arg.ExerciseName,
+		arg.SetOrder,
+		arg.Weight,
+		arg.Reps,
+		arg.Distance,
+		arg.Seconds,
+		arg.Notes,
+		arg.WorkoutNotes,
+		arg.Rpe,
+		arg.LoggedAt,
+	)
+	return err
+}
 
 const get1RMHistory = `-- name: Get1RMHistory :many
 select distinct on (logged_at) (weight * reps * 0.0333 + weight)::float AS estimated_1rm
@@ -50,9 +90,9 @@ ORDER BY logged_at DESC,
 LIMIT 1
 `
 
-func (q *Queries) GetBestSet(ctx context.Context, lower string) (interface{}, error) {
+func (q *Queries) GetBestSet(ctx context.Context, lower string) (sql.NullString, error) {
 	row := q.db.QueryRowContext(ctx, getBestSet, lower)
-	var best_set interface{}
+	var best_set sql.NullString
 	err := row.Scan(&best_set)
 	return best_set, err
 }
