@@ -16,7 +16,7 @@ import (
 )
 
 type Set struct {
-	LoggedAt     string `csv:"date"`
+	LoggedAt     string `csv:"Date"`
 	WorkoutName  string `csv:"Workout Name"`
 	Duration     string `csv:"Duration"`
 	ExerciseName string `csv:"Exercise Name"`
@@ -93,6 +93,12 @@ func ExtractCmd(ctx context.Context) *cobra.Command {
 					continue
 				}
 
+				loggedAt, err := time.Parse("2006-01-02 15:04:05", set.LoggedAt)
+				if err != nil {
+					logger.Error("failed to parse loggedAt", zap.Error(err))
+					continue
+				}
+
 				err = queries.CreateLiftSetLog(ctx, db.CreateLiftSetLogParams{
 					WorkoutName:  set.WorkoutName,
 					ExerciseName: set.ExerciseName,
@@ -101,7 +107,7 @@ func ExtractCmd(ctx context.Context) *cobra.Command {
 					Seconds:      seconds,
 					Notes:        sql.NullString{String: set.Notes, Valid: set.Notes != ""},
 					WorkoutNotes: sql.NullString{String: set.WorkoutNotes, Valid: set.WorkoutNotes != ""},
-					LoggedAt:     sql.NullTime{Time: time.Now(), Valid: true},
+					LoggedAt:     sql.NullTime{Time: loggedAt, Valid: true},
 				})
 				if err != nil {
 					logger.Error("failed to create lift set log", zap.Error(err), zap.String("workout_name", set.WorkoutName), zap.String("exercise_name", set.ExerciseName))
