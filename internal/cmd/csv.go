@@ -75,6 +75,11 @@ func ExtractCmd(ctx context.Context) *cobra.Command {
 			queries := db.New(database)
 
 			for _, set := range sets {
+				if set.SetOrder == "Rest Timer" {
+					logger.Debug("skipping rest timer set")
+					continue
+				}
+
 				weight, err := strconv.ParseFloat(set.Weight, 64)
 				if err != nil {
 					logger.Error("failed to parse weight", zap.Error(err))
