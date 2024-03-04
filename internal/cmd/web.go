@@ -19,7 +19,7 @@ func WebCmd(ctx context.Context) *cobra.Command {
 		Args:  cobra.ExactArgs(0),
 		Short: "Start the web server",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			port = 8080
+			port = 8001
 			if os.Getenv("PORT") != "" {
 				port, _ = strconv.Atoi(os.Getenv("PORT"))
 			}
