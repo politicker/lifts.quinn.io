@@ -3,23 +3,7 @@
   <head>
     <title>lifts.quinn.io</title>
     <link rel="stylesheet" href="/static/css/index.css" />
-    <style>
-      html,
-      body {
-        height: 100%;
-      }
-      body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-      .frame {
-        display: grid;
-        gap: 80px;
-        grid-template-columns: 1fr 1fr;
-      }
-    </style>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script>
       window.DATA = JSON.parse("{{.LiftData}}");
     </script>
@@ -27,13 +11,11 @@
     <script type="module">
       import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
-      const holder = d3.select("body").append("div").attr("class", "frame");
-
-      const height = d3
-        .scaleLinear()
+      d3.scaleLinear()
         .domain([0, d3.max(window.DATA)])
         .range([0, 100]);
 
+      const holder = d3.select(".frame");
       holder
         .selectAll(".lift")
         .data(window.DATA)
@@ -60,5 +42,7 @@
         });
     </script>
   </head>
-  <body></body>
+  <body>
+    <div class="frame"></div>
+  </body>
 </html>
