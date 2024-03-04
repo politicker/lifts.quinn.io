@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>Label</key>
+    <string>com.quinn-lifts</string>
+
+    <key>ProgramArguments</key>
+    <array>
+      <string>/usr/local/bin/quinn-lifts</string>
+      <string>web</string>
+    </array>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>KeepAlive</key>
+    <true/>
+
+    <!-- NOTE: I don't think this is necessary. Keeping
+		it here in case I need it later.   -->
+    <!-- <key>WorkingDirectory</key>
+    <string>/usr/local/bin</string> -->
+
+    <key>EnvironmentVariables</key>
+    <dict>
+      <key>DATABASE_URL</key>
+      <string>postgresql://localhost:5432/quinn-lifts</string>
+
+      <key>PORT</key>
+      <string>8001</string>
+    </dict>
+
+    <key>StandardOutPath</key>
+    <string>/Users/harrison/Library/Logs/QuinnLifts/quinn-lifts-out.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/Users/harrison/Library/Logs/QuinnLifts/quinn-lifts-error.log</string>
+  </dict>
+</plist>

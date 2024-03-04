@@ -1,0 +1,19 @@
+[Unit]
+Description=Webserver for lifts.quinn.io
+
+[Service]
+ExecStart=/usr/local/bin/lifts.quinn.io web
+Restart=always
+
+# user and group under which the service will run
+User=harrison
+Group=staff
+
+# Set environment vars
+Environment="DATABASE_URL=postgresql://localhost:5432/quinn-lifts" "PORT=8001"
+
+# Working directory
+WorkingDirectory=/usr/local/bin
+
+[Install]
+WantedBy=multi-user.target
