@@ -11,6 +11,7 @@ import (
 
 	_ "github.com/lib/pq"
 	"github.com/politicker/lifts.quinn.io/internal/db"
+	"github.com/politicker/lifts.quinn.io/internal/domain"
 	"go.uber.org/zap"
 )
 
@@ -55,10 +56,35 @@ func NewWeb(ctx context.Context, logger *zap.Logger, database *sql.DB, port int)
 
 func (s *web) Start() error {
 	http.HandleFunc("/", s.indexHandler)
+	http.HandleFunc("/upload-lifts", s.uploadLiftsHandler)
+
 	fs := http.FileServer(http.FS(staticFiles))
 	http.Handle("/static/", fs)
 
 	return http.ListenAndServe(fmt.Sprintf(":%d", s.port), nil)
+}
+
+func (s *web) uploadLiftsHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Ensure the content type is correct
+	if r.Header.Get("Content-Type") != "text/csv" {
+		http.Error(w, "Unsupported media type. Please upload a CSV file.", http.StatusUnsupportedMediaType)
+		return
+	}
+
+	importer := domain.NewImporter(s.logger, s.queries)
+	err := importer.Run(r.Context(), r.Body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Respond to the client
+	w.WriteHeader(http.StatusOK)
 }
 
 func (s *web) indexHandler(w http.ResponseWriter, r *http.Request) {
