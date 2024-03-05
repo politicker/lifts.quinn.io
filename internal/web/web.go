@@ -15,27 +15,14 @@ import (
 	"go.uber.org/zap"
 )
 
-const (
-	deadlift = "deadlift (barbell)"
-	bench    = "bench press (barbell)"
-	squat    = "squat (barbell)"
-	ohp      = "overhead press (barbell)"
-)
-
 //go:embed static/*
 var staticFiles embed.FS
 
 //go:embed templates/index.html
 var indexHTML embed.FS
 
-type LiftData struct {
-	Name    string
-	BestSet string
-	History []float64
-}
-
 type TemplateData struct {
-	LiftData string
+	Lifts string
 }
 
 type web struct {
@@ -94,7 +81,8 @@ func (s *web) indexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	liftData, err := s.getLiftData(r.Context())
+	lr := domain.NewLiftsReader(s.logger, s.queries)
+	liftData, err := lr.GetLifts(r.Context())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -106,77 +94,9 @@ func (s *web) indexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = tmpl.Execute(w, TemplateData{LiftData: string(jsonData)})
+	err = tmpl.Execute(w, TemplateData{Lifts: string(jsonData)})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-}
-
-func (s *web) getLiftData(ctx context.Context) ([]LiftData, error) {
-	ohpHistory, err := s.queries.Get1RMHistory(ctx, ohp)
-	if err != nil {
-		s.logger.Error("failed to get ohp history")
-		return nil, err
-	}
-
-	squatHistory, err := s.queries.Get1RMHistory(ctx, squat)
-	if err != nil {
-		s.logger.Error("failed to get squat history")
-		return nil, err
-	}
-
-	benchHistory, err := s.queries.Get1RMHistory(ctx, bench)
-	if err != nil {
-		s.logger.Error("failed to get bench history")
-		return nil, err
-	}
-
-	deadliftHistory, err := s.queries.Get1RMHistory(ctx, deadlift)
-	if err != nil {
-		s.logger.Error("failed to get deadlift history")
-		return nil, err
-	}
-
-	bestOHP, err := s.queries.GetBestSet(ctx, ohp)
-	if err != nil {
-		s.logger.Error("failed to get best ohp")
-		return nil, err
-	}
-
-	bestSquat, err := s.queries.GetBestSet(ctx, squat)
-	if err != nil {
-		s.logger.Error("failed to get best squat")
-		return nil, err
-	}
-
-	bestBench, err := s.queries.GetBestSet(ctx, bench)
-	if err != nil {
-		s.logger.Error("failed to get best bench")
-		return nil, err
-	}
-
-	bestDeadlift, err := s.queries.GetBestSet(ctx, deadlift)
-	if err != nil {
-		s.logger.Error("failed to get best deadlift")
-		return nil, err
-	}
-
-	return []LiftData{{
-		Name:    "OHP",
-		BestSet: bestOHP.String,
-		History: ohpHistory,
-	}, {
-		Name:    "Squat",
-		BestSet: bestSquat.String,
-		History: squatHistory,
-	}, {
-		Name:    "Bench",
-		BestSet: bestBench.String,
-		History: benchHistory,
-	}, {
-		Name:    "Deadlift",
-		BestSet: bestDeadlift.String,
-		History: deadliftHistory,
-	}}, nil
 }
