@@ -1,6 +1,7 @@
 @font-face {
 	font-family: 'SF Compact Rounded';
 	src: url('/static/fonts/SF-Compact-Rounded-Regular.otf') format('opentype');
+	font-display: swap;
 	font-weight: normal;
 	font-style: normal;
 }
@@ -19,44 +20,69 @@
 	font-style: normal;
 }
 
-html,
-body,
+:root {
+	--primary-color: #DD534B;
+	--accent-color: #D8BF8A;
+
+	--system-ui-font: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+	--headline-font-size: 24px;
+	--body-font-size: 72px;
+}
+
 * {
-	font-family: 'SF Compact Rounded', sans-serif;
-	background-color: #E4DFD5;
+	box-sizing: border-box;
 	margin: 0;
 	padding: 0;
 }
 
-h3,
-p {
-	margin: 0;
+body {
+	display: flex;
+	font-family: 'SF Compact Rounded', var(--system-ui-font);
+	background-color: #E4DFD5;
+	justify-content: center;
+	align-items: center;
+	min-height: 100vh;
+	overflow-x: hidden;
 }
 
 h3 {
-	font-family: 'SF Compact Rounded';
 	font-weight: bold;
-	font-size: 24px;
-	color: #DD534B;
+	font-size: var(--headline-font-size);
+	color: var(--primary-color);
 }
 
 p {
-	font-family: 'SF Compact Rounded';
 	font-weight: bolder;
-	font-size: 72px;
+	font-size: var(--body-font-size);
+}
+
+.frame {
+	display: grid;
+	gap: 80px;
+	grid-template-columns: repeat(2, 1fr);
 }
 
 .graph {
 	display: flex;
-	gap: 5px;
+	gap: 7px;
 	align-items: flex-end;
 }
 
 .bar {
-	display: inline-block;
 	border-radius: 5px;
 	width: 20px;
-	height: 75px;
-	margin-right: 2px;
-	background-color: #D8BF8A;
+	background-color: var(--accent-color);
+}
+
+@media (max-width: 600px) {
+	body {
+		align-items: flex-start;
+		margin: 30px 0;
+	}
+
+	.frame {
+		display: flex;
+		flex-direction: column;
+		gap: 60px;
+	}
 }
