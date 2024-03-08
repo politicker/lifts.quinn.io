@@ -8,12 +8,14 @@ package db
 import (
 	"context"
 	"database/sql"
+	"time"
 )
 
 const createLiftSetLog = `-- name: CreateLiftSetLog :exec
 INSERT INTO lift_set_log (workout_name, workout_duration, exercise_name, set_order, weight, reps, distance, seconds,
                           notes, workout_notes, rpe, logged_at)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+ON CONFLICT (workout_name, exercise_name, set_order, logged_at) DO NOTHING
 `
 
 type CreateLiftSetLogParams struct {
@@ -28,7 +30,7 @@ type CreateLiftSetLogParams struct {
 	Notes           sql.NullString
 	WorkoutNotes    sql.NullString
 	Rpe             sql.NullString
-	LoggedAt        sql.NullTime
+	LoggedAt        time.Time
 }
 
 func (q *Queries) CreateLiftSetLog(ctx context.Context, arg CreateLiftSetLogParams) error {
