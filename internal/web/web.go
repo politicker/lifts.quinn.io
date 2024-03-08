@@ -22,19 +22,22 @@ var staticFiles embed.FS
 var indexHTML embed.FS
 
 type TemplateData struct {
+	Title string
 	Lifts string
 }
 
 type web struct {
 	port       int
+	title      string
 	logger     *zap.Logger
 	queries    *db.Queries
 	httpClient *http.Client
 }
 
-func NewWeb(ctx context.Context, logger *zap.Logger, database *sql.DB, port int) *web {
+func NewWeb(ctx context.Context, logger *zap.Logger, database *sql.DB, port int, title string) *web {
 	return &web{
 		port:       port,
+		title:      title,
 		logger:     logger,
 		queries:    db.New(database),
 		httpClient: &http.Client{},
@@ -93,7 +96,7 @@ func (s *web) indexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = tmpl.Execute(w, TemplateData{Lifts: string(jsonData)})
+	err = tmpl.Execute(w, TemplateData{Title: s.title, Lifts: string(jsonData)})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

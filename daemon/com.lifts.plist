@@ -29,6 +29,9 @@
 
       <key>PORT</key>
       <string>8001</string>
+
+      <key>SITE_TITLE</key>
+      <string>Harrison's Lifts</string>
     </dict>
 
     <key>StandardOutPath</key>

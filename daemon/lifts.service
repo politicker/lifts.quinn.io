@@ -10,7 +10,7 @@ User=harrison
 Group=staff
 
 # Set environment vars
-Environment="DATABASE_URL=postgresql://localhost:5432/quinn-lifts" "PORT=8001"
+Environment="DATABASE_URL=postgresql://localhost:5432/quinn-lifts" "PORT=8001" "SITE_TITLE=Harrison's Lifts"
 
 # Working directory
 WorkingDirectory=/usr/local/bin

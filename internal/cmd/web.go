@@ -13,6 +13,7 @@ import (
 
 func WebCmd(ctx context.Context) *cobra.Command {
 	var port int
+	var title string
 
 	cmd := &cobra.Command{
 		Use:   "web",
@@ -24,6 +25,11 @@ func WebCmd(ctx context.Context) *cobra.Command {
 				port, _ = strconv.Atoi(os.Getenv("PORT"))
 			}
 
+			title = "Lifts"
+			if os.Getenv("SITE_TITLE") != "" {
+				title = os.Getenv("SITE_TITLE")
+			}
+
 			logger := cmdutil.NewLogger("web")
 			defer func() { _ = logger.Sync() }()
 
@@ -33,7 +39,7 @@ func WebCmd(ctx context.Context) *cobra.Command {
 			}
 			defer db.Close()
 
-			srv := web.NewWeb(ctx, logger, db, port)
+			srv := web.NewWeb(ctx, logger, db, port, title)
 			err = srv.Start()
 			if err != nil {
 				return err
