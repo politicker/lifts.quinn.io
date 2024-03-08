@@ -34,7 +34,10 @@ func WebCmd(ctx context.Context) *cobra.Command {
 			defer db.Close()
 
 			srv := web.NewWeb(ctx, logger, db, port)
-			srv.Start()
+			err = srv.Start()
+			if err != nil {
+				return err
+			}
 
 			logger.Info("web server started", zap.Int("port", port))
 
