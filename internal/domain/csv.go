@@ -83,7 +83,7 @@ func (i *importer) Run(ctx context.Context, reader io.Reader) error {
 			Seconds:      seconds,
 			Notes:        sql.NullString{String: set.Notes, Valid: set.Notes != ""},
 			WorkoutNotes: sql.NullString{String: set.WorkoutNotes, Valid: set.WorkoutNotes != ""},
-			LoggedAt:     sql.NullTime{Time: loggedAt, Valid: true},
+			LoggedAt:     loggedAt,
 		})
 		if err != nil {
 			i.logger.Error("failed to create lift set log", zap.Error(err), zap.String("workout_name", set.WorkoutName), zap.String("exercise_name", set.ExerciseName))
