@@ -43,7 +43,7 @@ func NewWeb(ctx context.Context, logger *zap.Logger, database *sql.DB, port int)
 
 func (s *web) Start() error {
 	http.HandleFunc("/", s.indexHandler)
-	http.HandleFunc("/upload-lifts", s.uploadLiftsHandler)
+	// http.HandleFunc("/upload-lifts", s.uploadLiftsHandler)
 
 	fs := http.FileServer(http.FS(staticFiles))
 	http.Handle("/static/", fs)
