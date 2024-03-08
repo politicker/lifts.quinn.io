@@ -25,7 +25,7 @@
     <key>EnvironmentVariables</key>
     <dict>
       <key>DATABASE_URL</key>
-      <string>postgresql://localhost:5432/quinn-lifts</string>
+      <string>postgresql://localhost:5432/quinn-lifts?sslmode=disable</string>
 
       <key>PORT</key>
       <string>8001</string>
