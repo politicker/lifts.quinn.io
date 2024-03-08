@@ -52,12 +52,16 @@ func (q *Queries) CreateLiftSetLog(ctx context.Context, arg CreateLiftSetLogPara
 }
 
 const get1RMHistory = `-- name: Get1RMHistory :many
-select distinct on (logged_at) (weight * reps * 0.0333 + weight)::float AS estimated_1rm
-from lift_set_log
-where lower(exercise_name) = lower($1)
-order by logged_at desc,
-         estimated_1rm desc
-LIMIT 11
+WITH OrderedSets AS (
+    SELECT DISTINCT ON (logged_at) logged_at, (weight * reps * 0.0333 + weight)::float AS estimated_1rm
+    FROM lift_set_log
+    WHERE lower(exercise_name) = lower($1)
+    ORDER BY logged_at DESC, estimated_1rm DESC
+    LIMIT 11
+)
+SELECT estimated_1rm
+FROM OrderedSets
+ORDER BY logged_at ASC
 `
 
 func (q *Queries) Get1RMHistory(ctx context.Context, lower string) ([]float64, error) {
