@@ -69,6 +69,12 @@ func (i *importer) Run(ctx context.Context, reader io.Reader) error {
 			continue
 		}
 
+		setOrder, err := strconv.ParseInt(set.SetOrder, 10, 64)
+		if err != nil {
+			i.logger.Error("failed to parse set order", zap.Error(err), zap.String("set_order", set.SetOrder))
+			continue
+		}
+
 		loggedAt, err := time.Parse("2006-01-02 15:04:05", set.LoggedAt)
 		if err != nil {
 			i.logger.Error("failed to parse loggedAt", zap.Error(err))
@@ -81,6 +87,7 @@ func (i *importer) Run(ctx context.Context, reader io.Reader) error {
 			Weight:       weight,
 			Reps:         reps,
 			Seconds:      seconds,
+			SetOrder:     int32(setOrder),
 			Notes:        sql.NullString{String: set.Notes, Valid: set.Notes != ""},
 			WorkoutNotes: sql.NullString{String: set.WorkoutNotes, Valid: set.WorkoutNotes != ""},
 			LoggedAt:     loggedAt,
