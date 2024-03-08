@@ -7,7 +7,7 @@ import (
 	"go.uber.org/zap"
 )
 
-type liftsReader struct {
+type liftsRepository struct {
 	logger  *zap.Logger
 	queries *db.Queries
 }
@@ -25,14 +25,14 @@ const (
 	ohp      = "overhead press (barbell)"
 )
 
-func NewLiftsReader(logger *zap.Logger, queries *db.Queries) *liftsReader {
-	return &liftsReader{
+func NewLiftsRepository(logger *zap.Logger, queries *db.Queries) *liftsRepository {
+	return &liftsRepository{
 		logger:  logger,
 		queries: queries,
 	}
 }
 
-func (lr *liftsReader) GetLifts(ctx context.Context) ([]Lift, error) {
+func (lr *liftsRepository) GetLifts(ctx context.Context) ([]Lift, error) {
 	ohpHistory, err := lr.queries.Get1RMHistory(ctx, ohp)
 	if err != nil {
 		lr.logger.Error("failed to get ohp history")

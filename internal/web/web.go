@@ -70,7 +70,6 @@ func (s *web) uploadLiftsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Respond to the client
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -81,7 +80,7 @@ func (s *web) indexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	lr := domain.NewLiftsReader(s.logger, s.queries)
+	lr := domain.NewLiftsRepository(s.logger, s.queries)
 	liftData, err := lr.GetLifts(r.Context())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
