@@ -87,8 +87,8 @@ const getBestSet = `-- name: GetBestSet :one
 SELECT (round(weight)::text || ' x ' || reps::text) AS best_set
 FROM lift_set_log
 WHERE LOWER(exercise_name) = LOWER($1)
-ORDER BY logged_at DESC,
-         (weight * reps * 0.0333 + weight) DESC
+ORDER BY (weight * reps * 0.0333 + weight) DESC,
+         logged_at DESC
 LIMIT 1
 `
 
