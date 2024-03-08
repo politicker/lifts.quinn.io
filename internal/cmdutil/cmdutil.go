@@ -3,7 +3,6 @@ package cmdutil
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"os"
 
 	"github.com/redis/go-redis/v9"
@@ -26,7 +25,6 @@ func NewLogger(service string) *zap.Logger {
 
 func NewDBConnection(ctx context.Context) (*sql.DB, error) {
 	databaseURL := os.Getenv("DATABASE_URL")
-	databaseURL = fmt.Sprintf("%s?sslmode=disable", databaseURL)
 
 	db, err := sql.Open("postgres", databaseURL)
 	if err != nil {
