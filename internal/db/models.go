@@ -21,6 +21,6 @@ type LiftSetLog struct {
 	Notes           sql.NullString
 	WorkoutNotes    sql.NullString
 	Rpe             sql.NullString
-	LoggedAt        sql.NullTime
+	LoggedAt        time.Time
 	ImportedAt      time.Time
 }
