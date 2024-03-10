@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"time"
 
 	"github.com/politicker/lifts.quinn.io/internal/db"
 	"go.uber.org/zap"
@@ -12,10 +13,16 @@ type liftsRepository struct {
 	queries *db.Queries
 }
 
-type Lift struct {
+type LiftHistory struct {
 	Name    string
-	BestSet string
-	History []float64
+	BestSet Lift
+	History []Lift
+}
+
+type Lift struct {
+	SetText string  // "200x5"
+	RepMax  float64 // 1rm
+	Date    time.Time
 }
 
 const (
@@ -32,70 +39,95 @@ func NewLiftsRepository(logger *zap.Logger, queries *db.Queries) *liftsRepositor
 	}
 }
 
-func (lr *liftsRepository) GetLifts(ctx context.Context) ([]Lift, error) {
-	ohpHistory, err := lr.queries.Get1RMHistory(ctx, ohp)
+func (lr *liftsRepository) GetLifts(ctx context.Context) ([]LiftHistory, error) {
+	bestOHP, err := lr.getBestSet(ctx, ohp)
 	if err != nil {
-		lr.logger.Error("failed to get ohp history")
 		return nil, err
 	}
 
-	squatHistory, err := lr.queries.Get1RMHistory(ctx, squat)
+	bestSquat, err := lr.getBestSet(ctx, squat)
 	if err != nil {
-		lr.logger.Error("failed to get squat history")
 		return nil, err
 	}
 
-	benchHistory, err := lr.queries.Get1RMHistory(ctx, bench)
+	bestBench, err := lr.getBestSet(ctx, bench)
 	if err != nil {
-		lr.logger.Error("failed to get bench history")
 		return nil, err
 	}
 
-	deadliftHistory, err := lr.queries.Get1RMHistory(ctx, deadlift)
+	bestDeadlift, err := lr.getBestSet(ctx, deadlift)
 	if err != nil {
-		lr.logger.Error("failed to get deadlift history")
 		return nil, err
 	}
 
-	bestOHP, err := lr.queries.GetBestSet(ctx, ohp)
+	ohpLiftHistory, err := lr.getLiftHistory(ctx, ohp)
 	if err != nil {
-		lr.logger.Error("failed to get best ohp")
 		return nil, err
 	}
 
-	bestSquat, err := lr.queries.GetBestSet(ctx, squat)
+	squatHistory, err := lr.getLiftHistory(ctx, squat)
 	if err != nil {
-		lr.logger.Error("failed to get best squat")
 		return nil, err
 	}
 
-	bestBench, err := lr.queries.GetBestSet(ctx, bench)
+	benchHistory, err := lr.getLiftHistory(ctx, bench)
 	if err != nil {
-		lr.logger.Error("failed to get best bench")
 		return nil, err
 	}
 
-	bestDeadlift, err := lr.queries.GetBestSet(ctx, deadlift)
+	deadliftHistory, err := lr.getLiftHistory(ctx, deadlift)
 	if err != nil {
-		lr.logger.Error("failed to get best deadlift")
 		return nil, err
 	}
 
-	return []Lift{{
+	return []LiftHistory{{
 		Name:    "OHP",
-		BestSet: bestOHP.String,
-		History: ohpHistory,
+		BestSet: bestOHP,
+		History: ohpLiftHistory,
 	}, {
 		Name:    "Squat",
-		BestSet: bestSquat.String,
+		BestSet: bestSquat,
 		History: squatHistory,
 	}, {
 		Name:    "Bench",
-		BestSet: bestBench.String,
+		BestSet: bestBench,
 		History: benchHistory,
 	}, {
 		Name:    "Deadlift",
-		BestSet: bestDeadlift.String,
+		BestSet: bestDeadlift,
 		History: deadliftHistory,
 	}}, nil
+}
+
+func (lr *liftsRepository) getBestSet(ctx context.Context, liftType string) (Lift, error) {
+	bestSet, err := lr.queries.GetBestSet(ctx, liftType)
+	if err != nil {
+		lr.logger.Error("failed to get best "+liftType, zap.Error(err))
+		return Lift{}, err
+	}
+
+	return Lift{
+		SetText: bestSet.SetText.String,
+		RepMax:  bestSet.Estimated1rm,
+		Date:    bestSet.LoggedAt,
+	}, nil
+}
+
+func (lr *liftsRepository) getLiftHistory(ctx context.Context, liftType string) ([]Lift, error) {
+	liftHistory, err := lr.queries.Get1RMHistory(ctx, liftType)
+	if err != nil {
+		lr.logger.Error("failed to get "+liftType+" history", zap.Error(err))
+		return nil, err
+	}
+
+	var history []Lift
+	for _, h := range liftHistory {
+		history = append(history, Lift{
+			SetText: h.SetText.String,
+			RepMax:  h.Estimated1rm,
+			Date:    h.LoggedAt,
+		})
+	}
+
+	return history, nil
 }
