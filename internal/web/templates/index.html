@@ -22,15 +22,17 @@
         .join("div")
         .attr("class", "lift")
         .each(function (d) {
+          const weights = d.History.map((h) => h.RepMax);
+
           const height = d3
             .scaleLinear()
-            .domain(d3.extent(d.History))
+            .domain(d3.extent(weights))
             .range([20, 100]);
 
           const n = d3.select(this);
 
-          n.append("h3").text(d.Name);
-          n.append("p").text(d.BestSet);
+          const liftName = n.append("h3").text(d.Name);
+          const setText = n.append("p").text(d.BestSet.SetText);
 
           n.append("div")
             .attr("class", "graph")
@@ -38,7 +40,14 @@
             .data(d.History)
             .join("div")
             .attr("class", "bar")
-            .style("height", (d) => `${height(d)}px`);
+            .style("height", (d) => `${height(d.RepMax)}px`)
+            .on("mouseover", function (d, i) {
+              const th = d3.select(this);
+            })
+            .on("mouseout", function (d, i) {
+              console.log(d);
+              // d3.select(this).transition().duration("50").attr("opacity", "1");
+            });
         });
     </script>
   </head>
