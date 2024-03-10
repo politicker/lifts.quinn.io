@@ -30,9 +30,14 @@
             .range([20, 100]);
 
           const container = d3.select(this);
+
           container.on("mouseleave", function (ev, frame) {
             setText.text(d.BestSet.SetText);
-            container.select(".lift-date").text("");
+            container
+              .select(".lift-date")
+              .transition()
+              .duration(200)
+              .style("opacity", 0);
           });
 
           container.append("h3").text(d.Name);
@@ -48,7 +53,15 @@
             .style("height", (d) => `${height(d.RepMax)}px`)
             .on("mouseover", function (ev, frame) {
               setText.text(frame.SetText);
-              container.select(".lift-date").text(frame.Date);
+
+              container.select(".lift-date").style("opacity", 1);
+              container.select(".lift-date").text(
+                new Date(frame.Date).toLocaleDateString(undefined, {
+                  month: "2-digit",
+                  day: "2-digit",
+                  year: "2-digit",
+                })
+              );
             });
 
           container.append("p").attr("class", "lift-date");
