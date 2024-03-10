@@ -1,20 +1,25 @@
 -- name: Get1RMHistory :many
-WITH OrderedSets AS (
-    SELECT DISTINCT ON (logged_at) logged_at, (weight * reps * 0.0333 + weight)::float AS estimated_1rm
-    FROM lift_set_log
-    WHERE lower(exercise_name) = lower($1)
-    ORDER BY logged_at DESC, estimated_1rm DESC
-    LIMIT 11
-)
-SELECT estimated_1rm
+WITH OrderedSets AS (SELECT DISTINCT ON (logged_at) logged_at,
+                                                    weight,
+                                                    reps,
+                                                    (weight * reps * 0.0333 + weight)::float AS estimated_1rm
+                     FROM lift_set_log
+                     WHERE lower(exercise_name) = lower($1)
+                     ORDER BY logged_at DESC, estimated_1rm DESC
+                     LIMIT 11)
+SELECT estimated_1rm, logged_at, (round(weight)::text || ' x ' || reps::text) as set_text
 FROM OrderedSets
 ORDER BY logged_at ASC;
 
 -- name: GetBestSet :one
-SELECT (round(weight)::text || ' x ' || reps::text) AS best_set
+SELECT (round(weight)::text || ' x ' || reps::text) AS set_text,
+       weight,
+       reps,
+       logged_at,
+       (weight * reps * 0.0333 + weight)            as estimated_1rm
 FROM lift_set_log
 WHERE LOWER(exercise_name) = LOWER($1)
-ORDER BY (weight * reps * 0.0333 + weight) DESC,
+ORDER BY estimated_1rm DESC,
          logged_at DESC
 LIMIT 1;
 

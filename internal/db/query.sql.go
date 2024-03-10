@@ -52,31 +52,38 @@ func (q *Queries) CreateLiftSetLog(ctx context.Context, arg CreateLiftSetLogPara
 }
 
 const get1RMHistory = `-- name: Get1RMHistory :many
-WITH OrderedSets AS (
-    SELECT DISTINCT ON (logged_at) logged_at, (weight * reps * 0.0333 + weight)::float AS estimated_1rm
-    FROM lift_set_log
-    WHERE lower(exercise_name) = lower($1)
-    ORDER BY logged_at DESC, estimated_1rm DESC
-    LIMIT 11
-)
-SELECT estimated_1rm
+WITH OrderedSets AS (SELECT DISTINCT ON (logged_at) logged_at,
+                                                    weight,
+                                                    reps,
+                                                    (weight * reps * 0.0333 + weight)::float AS estimated_1rm
+                     FROM lift_set_log
+                     WHERE lower(exercise_name) = lower($1)
+                     ORDER BY logged_at DESC, estimated_1rm DESC
+                     LIMIT 11)
+SELECT estimated_1rm, logged_at, (round(weight)::text || ' x ' || reps::text) as set_text
 FROM OrderedSets
 ORDER BY logged_at ASC
 `
 
-func (q *Queries) Get1RMHistory(ctx context.Context, lower string) ([]float64, error) {
+type Get1RMHistoryRow struct {
+	Estimated1rm float64
+	LoggedAt     time.Time
+	SetText      sql.NullString
+}
+
+func (q *Queries) Get1RMHistory(ctx context.Context, lower string) ([]Get1RMHistoryRow, error) {
 	rows, err := q.db.QueryContext(ctx, get1RMHistory, lower)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []float64
+	var items []Get1RMHistoryRow
 	for rows.Next() {
-		var estimated_1rm float64
-		if err := rows.Scan(&estimated_1rm); err != nil {
+		var i Get1RMHistoryRow
+		if err := rows.Scan(&i.Estimated1rm, &i.LoggedAt, &i.SetText); err != nil {
 			return nil, err
 		}
-		items = append(items, estimated_1rm)
+		items = append(items, i)
 	}
 	if err := rows.Close(); err != nil {
 		return nil, err
@@ -88,17 +95,35 @@ func (q *Queries) Get1RMHistory(ctx context.Context, lower string) ([]float64, e
 }
 
 const getBestSet = `-- name: GetBestSet :one
-SELECT (round(weight)::text || ' x ' || reps::text) AS best_set
+SELECT (round(weight)::text || ' x ' || reps::text) AS set_text,
+       weight,
+       reps,
+       logged_at,
+       (weight * reps * 0.0333 + weight)            as estimated_1rm
 FROM lift_set_log
 WHERE LOWER(exercise_name) = LOWER($1)
-ORDER BY (weight * reps * 0.0333 + weight) DESC,
+ORDER BY estimated_1rm DESC,
          logged_at DESC
 LIMIT 1
 `
 
-func (q *Queries) GetBestSet(ctx context.Context, lower string) (sql.NullString, error) {
+type GetBestSetRow struct {
+	SetText      sql.NullString
+	Weight       float64
+	Reps         float64
+	LoggedAt     time.Time
+	Estimated1rm float64
+}
+
+func (q *Queries) GetBestSet(ctx context.Context, lower string) (GetBestSetRow, error) {
 	row := q.db.QueryRowContext(ctx, getBestSet, lower)
-	var best_set sql.NullString
-	err := row.Scan(&best_set)
-	return best_set, err
+	var i GetBestSetRow
+	err := row.Scan(
+		&i.SetText,
+		&i.Weight,
+		&i.Reps,
+		&i.LoggedAt,
+		&i.Estimated1rm,
+	)
+	return i, err
 }
