@@ -1,5 +1,13 @@
 @font-face {
 	font-family: 'SF Compact Rounded';
+	src: url('/static/fonts/SF-Compact-Rounded-Light.otf') format('opentype');
+	font-display: swap;
+	font-weight: 200;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'SF Compact Rounded';
 	src: url('/static/fonts/SF-Compact-Rounded-Regular.otf') format('opentype');
 	font-display: swap;
 	font-weight: normal;
@@ -23,10 +31,13 @@
 :root {
 	--primary-color: #DD534B;
 	--accent-color: #D8BF8A;
+	--tertiary-color: #868686;
 
 	--system-ui-font: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 	--headline-font-size: 24px;
 	--body-font-size: 72px;
+
+
 }
 
 * {
@@ -72,6 +83,13 @@ p {
 	border-radius: 5px;
 	width: 20px;
 	background-color: var(--accent-color);
+}
+
+.lift-date {
+	font-size: 16px;
+	text-align: center;
+	color: var(--tertiary-color);
+	min-height: 20px;
 }
 
 @media (max-width: 600px) {

@@ -29,25 +29,29 @@
             .domain(d3.extent(weights))
             .range([20, 100]);
 
-          const n = d3.select(this);
+          const container = d3.select(this);
+          container.on("mouseleave", function (ev, frame) {
+            setText.text(d.BestSet.SetText);
+            container.select(".lift-date").text("");
+          });
 
-          const liftName = n.append("h3").text(d.Name);
-          const setText = n.append("p").text(d.BestSet.SetText);
+          container.append("h3").text(d.Name);
+          const setText = container.append("p").text(d.BestSet.SetText);
 
-          n.append("div")
+          container
+            .append("div")
             .attr("class", "graph")
             .selectAll(".bar")
             .data(d.History)
             .join("div")
             .attr("class", "bar")
             .style("height", (d) => `${height(d.RepMax)}px`)
-            .on("mouseover", function (d, i) {
-              const th = d3.select(this);
-            })
-            .on("mouseout", function (d, i) {
-              console.log(d);
-              // d3.select(this).transition().duration("50").attr("opacity", "1");
+            .on("mouseover", function (ev, frame) {
+              setText.text(frame.SetText);
+              container.select(".lift-date").text(frame.Date);
             });
+
+          container.append("p").attr("class", "lift-date");
         });
     </script>
   </head>
