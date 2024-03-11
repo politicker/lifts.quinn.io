@@ -24,7 +24,7 @@
 			"args": [
 				"extract",
 				"--file",
-				"lifts.csv"
+				"strong.csv"
 			],
 			"envFile": "${workspaceFolder}/.env"
 		},
