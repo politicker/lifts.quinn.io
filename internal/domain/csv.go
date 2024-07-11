@@ -3,6 +3,7 @@ package domain
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"io"
 	"strconv"
 	"time"
@@ -43,6 +44,10 @@ func (i *importer) Run(ctx context.Context, reader io.Reader) error {
 	sets := []Set{}
 	if err := gocsv.Unmarshal(reader, &sets); err != nil {
 		return err
+	}
+
+	if len(sets) == 0 {
+		return errors.New("lifts CSV file contains no data")
 	}
 
 	for _, set := range sets {
