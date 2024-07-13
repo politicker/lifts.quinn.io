@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"io"
 	"strconv"
 	"time"
 
@@ -40,9 +39,9 @@ func NewImporter(logger *zap.Logger, queries *db.Queries) *importer {
 	}
 }
 
-func (i *importer) Run(ctx context.Context, reader io.Reader) error {
+func (i *importer) Run(ctx context.Context, csvData []byte) error {
 	sets := []Set{}
-	if err := gocsv.Unmarshal(reader, &sets); err != nil {
+	if err := gocsv.UnmarshalBytes(csvData, &sets); err != nil {
 		return err
 	}
 
@@ -52,7 +51,6 @@ func (i *importer) Run(ctx context.Context, reader io.Reader) error {
 
 	for _, set := range sets {
 		if set.SetOrder == "Rest Timer" {
-			i.logger.Debug("skipping rest timer set")
 			continue
 		}
 
@@ -76,6 +74,13 @@ func (i *importer) Run(ctx context.Context, reader io.Reader) error {
 
 		setOrder, err := strconv.ParseInt(set.SetOrder, 10, 64)
 		if err != nil {
+			// Sometimes set order comes in as "W" or "L". In those cases we don't want to dump the stack trace
+			if numErr, ok := err.(*strconv.NumError); ok {
+				if errors.Is(numErr.Err, strconv.ErrSyntax) {
+					continue
+				}
+			}
+
 			i.logger.Error("failed to parse set order", zap.Error(err), zap.String("set_order", set.SetOrder))
 			continue
 		}
@@ -86,6 +91,7 @@ func (i *importer) Run(ctx context.Context, reader io.Reader) error {
 			continue
 		}
 
+		i.logger.Debug("inserting lift set log", zap.String("workout_name", set.WorkoutName), zap.String("exercise_name", set.ExerciseName))
 		err = i.queries.CreateLiftSetLog(ctx, db.CreateLiftSetLogParams{
 			WorkoutName:  set.WorkoutName,
 			ExerciseName: set.ExerciseName,

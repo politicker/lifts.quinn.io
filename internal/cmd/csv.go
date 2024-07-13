@@ -26,17 +26,12 @@ func ExtractCmd(ctx context.Context) *cobra.Command {
 				return errors.New("file is a required flag")
 			}
 
-			csvFile, err := os.Open(filePath)
+			csvFile, err := os.ReadFile(filePath)
 			if err != nil {
 				panic(err)
 			}
-			defer csvFile.Close()
 
-			fileInfo, err := csvFile.Stat()
-			if err != nil {
-				panic(err)
-			}
-			if fileInfo.Size() == 0 {
+			if len(csvFile) == 0 {
 				return errors.New("lifts CSV file is empty")
 			}
 

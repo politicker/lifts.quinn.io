@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"io"
 	"net/http"
 	"os"
 
@@ -80,15 +81,24 @@ func (s *web) uploadLiftsHandler(w http.ResponseWriter, r *http.Request) {
 
 	s.logger.Info("Received lift data upload")
 	importer := domain.NewImporter(s.logger, s.queries)
-	err := importer.Run(r.Context(), r.Body)
+
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		s.logger.Error("Error importing lift data", zap.Error(err))
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		s.logger.Info("Unauthorized", zap.String("secret", userSecret))
+		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
 
+	go func(body []byte) {
+		err := importer.Run(context.Background(), body)
+		if err != nil {
+			s.logger.Error("Error importing lift data", zap.Error(err))
+		}
+	}(body)
+
 	s.logger.Info("Lift data imported successfully")
 	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Success"))
 }
 
 func (s *web) indexHandler(w http.ResponseWriter, r *http.Request) {
